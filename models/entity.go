@@ -7,7 +7,7 @@ import (
 	"name_shop_api/utils"
 	"strings"
 
-	"github.com/yanyiwu/gojieba"
+	"github.com/wangbin/jiebago"
 )
 
 type Entity struct {
@@ -58,8 +58,13 @@ func GetEntityByNameAndIndex(name string, indexValue int) (resEntity ResEntity, 
 
 	// resEntity.Keys = getContentKeys(resEntity.Entity.Content)
 
-	jieba := gojieba.NewJieba()
-	defer jieba.Free()
+	// jieba 分词工具
+	// jieba := gojieba.NewJieba()
+	// defer jieba.Free()
+
+	// seg 分词工具
+	var seg jiebago.Segmenter
+	seg.LoadDictionary("../data/dictionary.txt")
 
 	var words []string
 
@@ -67,13 +72,15 @@ func GetEntityByNameAndIndex(name string, indexValue int) (resEntity ResEntity, 
 		// 分段拆分
 		contentKeys := strings.FieldsFunc(resEntity.Entity.Content, splitString)
 		for _, wordStr := range contentKeys {
-			words = append(words, jieba.Cut(wordStr, true)...)
+			for word := range seg.Cut(wordStr, true) {
+				words = append(words, word)
+			}
 		}
 	} else {
-		words = jieba.Cut(resEntity.Entity.Content, true)
+		for word := range seg.Cut(resEntity.Entity.Content, true) {
+			words = append(words, word)
+		}
 	}
-
-	jieba.Free()
 
 	// filter key words
 	filterKey := utils.Filter(words, func(key string) bool {

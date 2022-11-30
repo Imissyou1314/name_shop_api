@@ -63,6 +63,7 @@ require (
 	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/shiena/ansicolor v0.0.0-20200904210342-c7312218db18 // indirect
 	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
+	github.com/wangbin/jiebago v0.3.2
 	github.com/yanyiwu/gojieba v1.2.0
 	golang.org/x/crypto v0.3.0 // indirect
 	golang.org/x/mod v0.7.0 // indirect

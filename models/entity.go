@@ -63,31 +63,27 @@ func GetEntityByNameAndIndex(name string, indexValue int) (resEntity ResEntity, 
 	// defer jieba.Free()
 
 	// seg 分词工具
-	var seg jiebago.Segmenter
-	seg.LoadDictionary("../data/dictionary.txt")
+	// var seg jiebago.Segmenter
+	// seg.LoadDictionary("../data/dictionary.txt")
 
-	var words []string
+	// var words []string
 
-	if len(resEntity.Entity.Content) > 2000 {
-		// 分段拆分
-		contentKeys := strings.FieldsFunc(resEntity.Entity.Content, splitString)
-		for _, wordStr := range contentKeys {
-			for word := range seg.Cut(wordStr, true) {
-				words = append(words, word)
-			}
-		}
-	} else {
-		for word := range seg.Cut(resEntity.Entity.Content, true) {
-			words = append(words, word)
-		}
-	}
+	// if len(resEntity.Entity.Content) > 2000 {
+	// 	// 分段拆分
+	// 	contentKeys := strings.FieldsFunc(resEntity.Entity.Content, splitString)
+	// 	for _, wordStr := range contentKeys {
+	// 		for word := range seg.Cut(wordStr, true) {
+	// 			words = append(words, word)
+	// 		}
+	// 	}
+	// } else {
+	// 	for word := range seg.Cut(resEntity.Entity.Content, true) {
+	// 		words = append(words, word)
+	// 	}
+	// }
 
 	// filter key words
-	filterKey := utils.Filter(words, func(key string) bool {
-		return key != "　" && key != "." && key != "，" && key != "。" && key != "；" && key != "“" && key != "？" && key != "：" && key != "、" && key != "！" && len(key) > 1 && len(key) <= 8
-	})
-
-	resEntity.Keys = filterKey
+	resEntity.Keys = filterNameKey(splitWords(resEntity.Entity.Content))
 	return resEntity, nil
 }
 
@@ -102,29 +98,35 @@ func getFileJsonContent(name string) ([]Entity, error) {
 	return entityList, err
 }
 
-// func getContentKeys(content string) []string {
-// 	var words []string
+// split words
+func splitWords(content string) (words []string) {
+	var seg jiebago.Segmenter
+	seg.LoadDictionary("../data/dictionary.txt")
 
-// 	jieba := gojieba.NewJieba()
-// 	defer jieba.Free()
+	// 拆分
+	for word := range seg.Cut(content, true) {
+		words = append(words, word)
+	}
+	return words
+}
 
-// 	if len(content) > 2000 {
-// 		// 分段拆分
-// 		contentKeys := strings.FieldsFunc(content, splitString)
-// 		for _, wordStr := range contentKeys {
-// 			words = append(words, jieba.Cut(wordStr, true)...)
-// 		}
-// 	} else {
-// 		words = jieba.Cut(content, true)
-// 	}
+// filter key words
+func filterNameKey(words []string) []string {
+	filterKey := utils.Filter(words, func(key string) bool {
+		// 过滤的字段
+		hideKeys := getLimitKeyWords()
+		fmt.Println(hideKeys)
+		return !strings.Contains(hideKeys, key) && len(key) > 1 && len(key) <= 8
+	})
+	return utils.RemoveDuplicateEle(filterKey)
+}
 
-// 	// filter key words
-// 	filterKey := utils.Filter(words, func(key string) bool {
-// 		return key != "　" && key != "." && key != "，" && key != "。" && key != "；" && key != "“" && key != "？" && key != "：" && key != "、" && key != "！" && len(key) > 1 && len(key) <= 8
-// 	})
-// 	return filterKey
-// }
-
-func splitString(r rune) bool {
-	return r == '。' || r == '？' || r == '；' || r == '！'
+func getLimitKeyWords() string {
+	words, err := ioutil.ReadFile("./data/limit.txt")
+	if err != nil {
+		fmt.Println(err.Error())
+		// 默认值
+		return " .。，；“？：、！《》只为上下淫死鬼无之乎者也吗妈爸奶爷让退败狗犬狼哉兮矣而以杀傻笨血你我他她它的得"
+	}
+	return string(words)
 }

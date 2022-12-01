@@ -115,7 +115,6 @@ func filterNameKey(words []string) []string {
 	filterKey := utils.Filter(words, func(key string) bool {
 		// 过滤的字段
 		hideKeys := getLimitKeyWords()
-		fmt.Println(hideKeys)
 		return !strings.Contains(hideKeys, key) && len(key) > 1 && len(key) <= 8
 	})
 	return utils.RemoveDuplicateEle(filterKey)
@@ -124,7 +123,6 @@ func filterNameKey(words []string) []string {
 func getLimitKeyWords() string {
 	words, err := ioutil.ReadFile("./data/limit.txt")
 	if err != nil {
-		fmt.Println(err.Error())
 		// 默认值
 		return " .。，；“？：、！《》只为上下淫死鬼无之乎者也吗妈爸奶爷让退败狗犬狼哉兮矣而以杀傻笨血你我他她它的得"
 	}

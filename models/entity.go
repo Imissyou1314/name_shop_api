@@ -115,7 +115,7 @@ func filterNameKey(words []string) []string {
 	filterKey := utils.Filter(words, func(key string) bool {
 		// 过滤的字段
 		hideKeys := getLimitKeyWords()
-		return !strings.Contains(hideKeys, key) && len(key) > 1 && len(key) <= 8
+		return !strings.Contains(hideKeys, key) && key != "　" && len(key) > 1 && len(key) <= 8
 	})
 	return utils.RemoveDuplicateEle(filterKey)
 }

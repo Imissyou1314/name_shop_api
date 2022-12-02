@@ -23,6 +23,10 @@ type ResEntity struct {
 	Keys   []string
 }
 
+type ContentWords struct {
+	Words []string `json:"words"`
+}
+
 func GetEntityByName(name string) ([]ResEntity, error) {
 	entityList, err := getFileJsonContent(name)
 	if err != nil {
@@ -56,35 +60,31 @@ func GetEntityByNameAndIndex(name string, indexValue int) (resEntity ResEntity, 
 		resEntity.Entity = entityList[indexValue]
 	}
 
-	// resEntity.Keys = getContentKeys(resEntity.Entity.Content)
-
-	// jieba 分词工具
-	// jieba := gojieba.NewJieba()
-	// defer jieba.Free()
-
-	// seg 分词工具
-	// var seg jiebago.Segmenter
-	// seg.LoadDictionary("../data/dictionary.txt")
-
-	// var words []string
-
-	// if len(resEntity.Entity.Content) > 2000 {
-	// 	// 分段拆分
-	// 	contentKeys := strings.FieldsFunc(resEntity.Entity.Content, splitString)
-	// 	for _, wordStr := range contentKeys {
-	// 		for word := range seg.Cut(wordStr, true) {
-	// 			words = append(words, word)
-	// 		}
-	// 	}
-	// } else {
-	// 	for word := range seg.Cut(resEntity.Entity.Content, true) {
-	// 		words = append(words, word)
-	// 	}
-	// }
-
 	// filter key words
 	resEntity.Keys = filterNameKey(splitWords(resEntity.Entity.Content))
 	return resEntity, nil
+}
+
+func GetEntityWordsByNameAndIndex(name string, indexValue int) (resWords ContentWords, err error) {
+	entityList, err := getFileJsonContent(name)
+	if err != nil {
+		fmt.Println("解析json 失败")
+		return resWords, err
+	}
+	var lenValue = len(entityList)
+	var entity = Entity{}
+	fmt.Printf("index %d =====> len %d", indexValue, lenValue)
+	if indexValue >= lenValue {
+		entity = entityList[lenValue-1]
+	} else {
+		entity = entityList[indexValue]
+	}
+	resWords.Words = strings.FieldsFunc(entity.Content, splitString)
+	return resWords, err
+}
+
+func splitString(c rune) bool {
+	return c == '。' || c == '；' || c == '？' || c == '　'
 }
 
 func getFileJsonContent(name string) ([]Entity, error) {

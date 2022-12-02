@@ -43,3 +43,21 @@ func (o *EntityController) GetOne() {
 		o.SetResult("名字不能为空", nil)
 	}
 }
+
+// @Title Get
+// @Description find Entity by name
+// @Param	name		path 	string	true		"the file name you want to get"
+// @Success 200 {[]Entity} models.Entity
+// @Failure 403 :name is empty
+// @router /words/:name/:index [get]
+func (o *EntityController) GetWords() {
+	name := o.Ctx.Input.Param(":name")
+	indexStr := o.Ctx.Input.Param(":index")
+	indexValue, _ := strconv.Atoi(indexStr)
+	if name != "" {
+		resultEntity, err := models.GetEntityWordsByNameAndIndex(name, indexValue)
+		o.SetResult(resultEntity, err)
+	} else {
+		o.SetResult("名字不能为空", nil)
+	}
+}

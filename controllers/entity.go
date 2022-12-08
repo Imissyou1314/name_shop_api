@@ -49,10 +49,10 @@ func (o *EntityController) GetOne() {
 // @Param	name		path 	string	true		"the file name you want to get"
 // @Success 200 {[]Entity} models.Entity
 // @Failure 403 :name is empty
-// @router /words/:name/:index [get]
+// @router /words [get]
 func (o *EntityController) GetWords() {
-	name := o.Ctx.Input.Param(":name")
-	indexStr := o.Ctx.Input.Param(":index")
+	name := o.Ctx.Input.Query("name")
+	indexStr := o.Ctx.Input.Query("index")
 	indexValue, _ := strconv.Atoi(indexStr)
 	if name != "" {
 		resultEntity, err := models.GetEntityWordsByNameAndIndex(name, indexValue)

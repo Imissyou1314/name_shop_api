@@ -24,6 +24,7 @@ func init() {
 			beego.NSInclude(
 				&controllers.BookController{},
 			),
+			beego.NSRouter("/words", &controllers.EntityController{}, "GET:GetWords"),
 		),
 		// beego.NSNamespace("/user",
 		// 	beego.NSInclude(
